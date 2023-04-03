@@ -14,6 +14,8 @@
 
 
 
+
+
 ; example: if I have each-word, a sample-word here. how to further process
 (def sample-word "bvwbjplbgvbhsrlpgdmjqwftvncz")
 ; create a queue
