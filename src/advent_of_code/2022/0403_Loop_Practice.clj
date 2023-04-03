@@ -1,1 +1,0 @@
-(ns advent-of-code.2022.0403-Loop-Practice)
