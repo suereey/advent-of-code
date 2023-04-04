@@ -1,4 +1,4 @@
-(ns advent-of-code.2022.day6-practice)
+(ns advent-of-code.2022.day6)
 
 (defn file->seq
   [filename]
@@ -15,22 +15,21 @@
   (= (count char-s)
      (count (set char-s))))
 
+(defn idx-char
+  [idx chars]
+  {:idx    idx
+   :window chars
+   :uniq?  (unique-chars? chars)})
+
 (defn idx-unique-char
   [sample-signal]
   (->> sample-signal
        (packet-window-s 4)
-       (map (fn [idx chars]
-              {:idx    idx
-               :window chars
-               :uniq? (unique-chars? chars)})
-            (range))
+       (map idx-char (range))
        (filter :uniq?)
        (first)
        (:idx)
-       (+ 4)
-       )
-  )
-
+       (+ 4)))
 
 ;; Rich Comment Block
 (comment
@@ -44,6 +43,7 @@
   ;; test method for each string
   (idx-unique-char "bvwbjplbgvbhsrlpgdmjqwftvncz")
   #_=> 5
+
   ;; use this method on sequences using map
   (map idx-unique-char ["mjqjpqmgbljsphdztnvjfqwrcgsmlb"
                         "bvwbjplbgvbhsrlpgdmjqwftvncz"
@@ -56,8 +56,24 @@
     (file->seq "resources/2022/day6/input-sample.txt")
     (map idx-unique-char)
     )
+  #_=> (7 5 6 10 11)
+  (->>
+    (file->seq "resources/2022/day6/input-sample-2.txt")
+    (map idx-unique-char)
+    )
+  #_=> (1282)
 
   ;; Note and Testing
+  (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz")
+  (map (fn [idx chars]
+         {:idx    idx
+          :window chars
+          :uniq?  (unique-chars? chars)})
+       (range)
+       (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz"))
+  (map idx-char
+       (range)
+       (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz"))
   ;; key method to use:
   (first (partition 4 1 "mjqjpqmgbljsphdztnvjfqwrcgsmlb"))
   #_=> (\m \j \q \j)
@@ -86,7 +102,7 @@
        (map (fn [idx chars]
               {:idx    idx
                :window chars
-               :uniq? (unique-chars? chars)})
+               :uniq?  (unique-chars? chars)})
             (range))
        (filter :uniq?)
        (first)
@@ -105,20 +121,20 @@
   ;; implement loop for parition method
   (defn generate-partition-function
     [window-size s]
-    (loop [i 0
+    (loop [i      0
            curr-s s
-           res []]
+           res    []]
       (if (< i (count s))
         (let [new-partition (take window-size curr-s)]
           (if (= (count new-partition) window-size)
-            (let [new-res (conj res new-partition)
+            (let [new-res    (conj res new-partition)
                   new-curr-s (rest curr-s)
-                  new-i (+ i 1)]
+                  new-i      (+ i 1)]
               (recur new-i new-curr-s new-res))
             res))
         res)))
 
-  (generate-partition-function  4 "abcdefg")
+  (generate-partition-function 4 "abcdefg")
   #_=> [(\a \b \c \d)
         (\b \c \d \e)
         (\c \d \e \f)
@@ -127,6 +143,20 @@
   (take 2 "abcd")
   (rest "Abcd")
   (take 2 '(\b \c \d))
+  (defn idx-unique-char
+    [sample-signal]
+    (->> sample-signal
+         (packet-window-s 4)
+         (map (fn [idx chars]
+                {:idx    idx
+                 :window chars
+                 :uniq?  (unique-chars? chars)})
+              (range))
+         (filter :uniq?)
+         (first)
+         (:idx)
+         (+ 4)
+         ))
   )
 
 
