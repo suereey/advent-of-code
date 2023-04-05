@@ -15,34 +15,39 @@
   (= (count char-s)
      (count (set char-s))))
 
-(defn idx-char
+(defn indexed-window
   [idx chars]
   {:idx    idx
    :window chars
-   :uniq?  (unique-chars? chars)})
+   })
 
 (defn idx-unique-char
   [sample-signal]
-  (->> sample-signal
-       (packet-window-s 4)
-       (map idx-char (range))
-       (filter :uniq?)
-       (first)
-       (:idx)
-       (+ 4)))
+  (let [starter-packet (->> sample-signal
+                             (packet-window-s 4)
+                             (map indexed-window (range))
+                             (map #(assoc % :uniq? (unique-chars? (:window %))))
+                             (filter #(unique-chars? (:window %)))
+                             (first))
+
+        marker-idx      (+ (:idx starter-packet) (count (:window starter-packet)))]
+    marker-idx))
+
+
 
 ;; Rich Comment Block
 (comment
   ;; read file
-  (file->seq "resources/2022/day6/input-sample.txt")
+  (do (def sample-signal-s (file->seq "resources/2022/day6/input-sample.txt"))
+      (def sample-signal (first sample-signal-s))
+      sample-signal-s)
   #_=> ["mjqjpqmgbljsphdztnvjfqwrcgsmlb"
         "bvwbjplbgvbhsrlpgdmjqwftvncz"
         "nppdvjthqldpwncqszvftbrmjlhg"
         "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
         "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"]
-  ;; test method for each string
-  (idx-unique-char "bvwbjplbgvbhsrlpgdmjqwftvncz")
-  #_=> 5
+
+
 
   ;; use this method on sequences using map
   (map idx-unique-char ["mjqjpqmgbljsphdztnvjfqwrcgsmlb"
@@ -63,7 +68,7 @@
     )
   #_=> (1282)
 
-  ;; Note and Testing
+  ;; below are notes can be removed
   (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz")
   (map (fn [idx chars]
          {:idx    idx
@@ -71,31 +76,18 @@
           :uniq?  (unique-chars? chars)})
        (range)
        (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz"))
-  (map idx-char
+
+  (map indexed-window
        (range)
        (packet-window-s 4 "bvwbjplbgvbhsrlpgdmjqwftvncz"))
-  ;; key method to use:
+
+
   (first (partition 4 1 "mjqjpqmgbljsphdztnvjfqwrcgsmlb"))
   #_=> (\m \j \q \j)
-  ;; Numerous examples
-  (do (def sample-signals (file->seq "resources/2022/day6/input-sample.txt"))
-      (def sample-signal (first sample-signals))
-      sample-signals)
-  #_=> ["mjqjpqmgbljsphdztnvjfqwrcgsmlb"
-        "bvwbjplbgvbhsrlpgdmjqwftvncz"
-        "nppdvjthqldpwncqszvftbrmjlhg"
-        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
-        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"]
 
   (->> (packet-window-s 4 sample-signal)
        (take 4))
   #_=> '((\m \j \q \j) (\j \q \j \p) (\q \j \p \q) (\j \p \q \m))
-
-  (->> sample-signal
-       (packet-window-s 4)
-       #_(map unique-chars?)
-       (filter unique-chars?)
-       )
 
   (->> sample-signal
        (packet-window-s 4)
@@ -109,8 +101,7 @@
        (:idx)
        (+ 4)
        )
-  ; call final method:
-  (idx-unique-char "bvwbjplbgvbhsrlpgdmjqwftvncz")
+
 
   ; implement the partition function by loop
   ; sample looping
@@ -157,6 +148,33 @@
          (:idx)
          (+ 4)
          ))
+
+  (defn indexed-window
+    [idx chars]
+    {:idx    idx
+     :window chars
+     ;:uniq?  (unique-chars? chars)
+     })
+  (defn idx-unique-char
+    [sample-signal]
+    (let [{:keys [idx window]
+           :as   starter-packet} (->> sample-signal
+                                      (packet-window-s 4)
+                                      (map indexed-window (range))
+                                      (map #(assoc % :uniq? (unique-chars? (:window %))))
+                                      (filter #(unique-chars? (:window %)))
+                                      (first))
+
+          ;starter-packet2 (->> sample-signal
+          ;                     (packet-window-s 4)
+          ;                     (map indexed-window (range))
+          ;                     (map #(assoc % :uniq? (unique-chars? (:window %))))
+          ;                     (filter #(unique-chars? (:window %)))
+          ;                     (first))
+
+          marker-idx      (+ idx (count window))
+          ]
+      marker-idx))
   )
 
 
