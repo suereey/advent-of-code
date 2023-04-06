@@ -15,7 +15,7 @@
   (= (count char-s)
      (count (set char-s))))
 
-(defn indexed-window
+(defn indexed+window
   [idx chars]
   {:idx    idx
    :window chars
@@ -25,15 +25,12 @@
   [sample-signal]
   (let [starter-packet (->> sample-signal
                              (packet-window-s 4)
-                             (map indexed-window (range))
+                             (map indexed+window (range))
                              (map #(assoc % :uniq? (unique-chars? (:window %))))
                              (filter #(unique-chars? (:window %)))
                              (first))
-
         marker-idx      (+ (:idx starter-packet) (count (:window starter-packet)))]
     marker-idx))
-
-
 
 ;; Rich Comment Block
 (comment
@@ -46,8 +43,6 @@
         "nppdvjthqldpwncqszvftbrmjlhg"
         "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
         "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"]
-
-
 
   ;; use this method on sequences using map
   (map idx-unique-char ["mjqjpqmgbljsphdztnvjfqwrcgsmlb"
