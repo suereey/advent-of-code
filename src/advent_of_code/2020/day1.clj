@@ -26,7 +26,8 @@
                                               (set entry-s))]
     two-sum-s))
 
-(defn complement-product
+
+(defn complement-product-2
   [target n]
   (* n
      (- target n)))
@@ -52,7 +53,7 @@
 
   (->> sample-entry-s
        (two-sum-s 2020)
-       (mapv (partial complement-product 2020))
+       (mapv (partial complement-product-2 2020))
        first)
 
   (two-sum-s 2020 sample-entry-s)
@@ -61,7 +62,7 @@
   #_=> 514579
   (map #(complement-product 2020 %)  (two-sum-s 2020 sample-entry-s))
   #_=> (514579 514579)
-  ; practice using partial instead of #()
+  ;; practice using partial instead of #()
   (mapv #(complement-product 2020 %)  (two-sum-s 2020 sample-entry-s))
   #_=> [514579 514579]
   (mapv (partial complement-product 2020) (two-sum-s 2020 sample-entry-s))
@@ -95,8 +96,7 @@
 
   (->> (let [entries (range 10000)]
          (for [x entries
-               y entries
-               z entries]
+               y entries]
            [x y]))
        (take 10))
 
