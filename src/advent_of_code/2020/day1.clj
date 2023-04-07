@@ -2,9 +2,6 @@
   (:require [clojure.string :as string]
             [clojure.set :as cljset]))
 
-
-
-
 (defn intify
   [int-str]
   (Integer/parseInt int-str))
@@ -16,15 +13,11 @@
            (string/split #"\n"))
        (mapv intify)))
 
-
 (defn entry-complement-s
   [complement entry-s]
   (->> entry-s
        (map (partial - complement))
        (into #{})))
-
-(def entry-2020complement-s (partial entry-complement-s 2020))
-
 
 (defn two-sum-s
   [target-sum entry-s]
@@ -37,12 +30,6 @@
   [target n]
   (* n
      (- target n)))
-
-
-(defn filter-expenses-pair
-  [entry-s entry-complement-s]
-  (filter #(contains? entry-s %) entry-complement-s))
-
 
 ;; Rich Comment Block
 (comment
@@ -65,29 +52,28 @@
 
   (->> sample-entry-s
        (two-sum-s 2020)
-       #_(entry-complement-s 2020)
-       #_(clojure.set/intersection (set sample-entry-s))
        (mapv (partial complement-product 2020))
        first)
 
-
-
-
-
-
-  (let [expect-expenses-s (expect-expenses-s intify-expense)
-        res-list          (clojure.set/intersection complements
-                                                    (set entry-s))
-        _                 (filter-expenses-pair intify-expense expect-expenses-s)
-        ]
-    (reduce * res-list))
+  (two-sum-s 2020 sample-entry-s)
+  #_=> #{299 1721}
+  (complement-product 2020 299)
   #_=> 514579
+  (map #(complement-product 2020 %)  (two-sum-s 2020 sample-entry-s))
+  #_=> (514579 514579)
+  ; practice using partial instead of #()
+  (mapv #(complement-product 2020 %)  (two-sum-s 2020 sample-entry-s))
+  #_=> [514579 514579]
+  (mapv (partial complement-product 2020) (two-sum-s 2020 sample-entry-s))
+  #_=> [514579 514579]
+
+  (def entry-2020complement-s (partial entry-complement-s 2020))
 
   ;; practice filter sample2, keep the value which exsist in sample 1
   (def sample1 [1721 979 366 299 675 1456])
   (def sample2 (list 299 1041 1654 1721 1345 564))
   (filter #(contains? (set sample1) %) sample2)
-  #_=>
+  #_=> (299 1721)
 
   ;; practice intify sample
   (mapv intify ["-1" "100" "1726"])
@@ -99,7 +85,6 @@
   #_=> (1)
   (filter #(= % 0) my-vector)
   #_=> ()
-
 
   ;; note from luckasz
   (let [entries         [1 2 3 4]
@@ -119,4 +104,10 @@
        (filter nonnil?)
        (take 2)
        (reduce *))
+  (->> sample-entry-s
+       (two-sum-s 2020)
+       #_(entry-complement-s 2020)
+       #_(clojure.set/intersection (set sample-entry-s))
+       (mapv (partial complement-product 2020))
+       first)
   )
