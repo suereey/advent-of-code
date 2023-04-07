@@ -58,7 +58,7 @@
     )
   #_=> (7 5 6 10 11)
   (->>
-    (file->seq "resources/2022/day6/input-sample-2.txt")
+    (file->seq "resources/2022/day6/input.txt")
     (map idx-unique-char)
     )
   #_=> (1282)

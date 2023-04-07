@@ -1,37 +1,84 @@
-(ns advent-of-code.2020.day1)
+(ns advent-of-code.2020.day1
+  (:require [clojure.string :as string]
+            [clojure.set :as cljset]))
 
-(defn file->seq
-  [filename]
-  (-> filename
-      (slurp)
-      (clojure.string/split #"\n")))
+
+
 
 (defn intify
-  [expense-report]
-  (map #(Integer/parseInt %) expense-report))
+  [int-str]
+  (Integer/parseInt int-str))
 
-(defn expect-expenses-s
-  [intify-expenses]
-  (let [expenses        intify-expenses
-        expect-expenses (map #(- 2020 %) expenses)]
-    expect-expenses))
+(defn file->entry-s
+  [filename]
+  (->> (-> filename
+           (slurp)
+           (string/split #"\n"))
+       (mapv intify)))
+
+
+(defn entry-complement-s
+  [complement entry-s]
+  (->> entry-s
+       (map (partial - complement))
+       (into #{})))
+
+(def entry-2020complement-s (partial entry-complement-s 2020))
+
+
+(defn two-sum-s
+  [target-sum entry-s]
+  (let [complements (entry-complement-s target-sum entry-s)
+        two-sum-s   (clojure.set/intersection complements
+                                              (set entry-s))]
+    two-sum-s))
+
+(defn complement-product
+  [target n]
+  (* n
+     (- target n)))
+
 
 (defn filter-expenses-pair
-  [intify-expenses expect-expenses-s]
-  (filter #(contains? (set intify-expenses) %) expect-expenses-s))
+  [entry-s entry-complement-s]
+  (filter #(contains? entry-s %) entry-complement-s))
 
 
 ;; Rich Comment Block
 (comment
+
   ;; read the file into a sequence
-  (do (def input-sample (file->seq "resources/2020/day1/input-sample.txt"))
-      input-sample)
-  #_=> ["1721" "979" "366" "299" "675" "1456"]
+  (do (def sample-entry-s (file->entry-s "resources/2020/day1/input-sample.txt"))
+      sample-entry-s)
+  #_=> [1721 979 366 299 675 1456]
+
+  (->> [1 4 9]
+       (entry-complement-s 20))
+  #_=> #{19 11 16}
+
+  (intersection #{1 2 3}
+                #{1 6 18 9})
+  #_=> #{1}
+
+  (two-sum-s 10 [4 1 14 6])
+  #_=> #{4 6}
+
+  (->> sample-entry-s
+       (two-sum-s 2020)
+       #_(entry-complement-s 2020)
+       #_(clojure.set/intersection (set sample-entry-s))
+       (mapv (partial complement-product 2020))
+       first)
 
 
-  (let [intify-expense    (intify input-sample)
-        expect-expenses-s (expect-expenses-s intify-expense)
-        res-list          (filter-expenses-pair intify-expense expect-expenses-s)
+
+
+
+
+  (let [expect-expenses-s (expect-expenses-s intify-expense)
+        res-list          (clojure.set/intersection complements
+                                                    (set entry-s))
+        _                 (filter-expenses-pair intify-expense expect-expenses-s)
         ]
     (reduce * res-list))
   #_=> 514579
@@ -40,10 +87,11 @@
   (def sample1 [1721 979 366 299 675 1456])
   (def sample2 (list 299 1041 1654 1721 1345 564))
   (filter #(contains? (set sample1) %) sample2)
+  #_=>
 
   ;; practice intify sample
-  (map #(Integer/parseInt %) input-sample)
-  #_=> (1721 979 366 299 675 1456)
+  (mapv intify ["-1" "100" "1726"])
+  #_=> [-1 100 1726]
 
   ;; practice filter
   (def my-vector [1 2 3 4])
@@ -66,6 +114,7 @@
                z entries]
            [x y]))
        (take 10))
+
   (->> (map (partial filter-target-val 2020))
        (filter nonnil?)
        (take 2)
