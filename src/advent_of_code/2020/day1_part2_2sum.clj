@@ -72,5 +72,8 @@
   #_=> #{979 366 675}
   (reduce * final-set)
   #_=> 241861950
+
+  (map (partial inc) [1 2 3])
+  (map #(inc %) [1 2 3])
   )
 
