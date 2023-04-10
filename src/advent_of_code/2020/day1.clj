@@ -32,6 +32,13 @@
   (* n
      (- target n)))
 
+;; for 3 sum problem solution 2.
+(defn compl-sum-s
+  [target entry-s complement-s]
+  (let [compl-sums (clojure.set/intersection complement-s
+                                             (set entry-s))]
+    compl-sums))
+
 ;; Rich Comment Block
 (comment
 
@@ -40,21 +47,67 @@
       sample-entry-s)
   #_=> [1721 979 366 299 675 1456]
 
-  (->> [1 4 9]
-       (entry-complement-s 20))
-  #_=> #{19 11 16}
-
-  (intersection #{1 2 3}
-                #{1 6 18 9})
-  #_=> #{1}
-
-  (two-sum-s 10 [4 1 14 6])
-  #_=> #{4 6}
-
+  ;; implement 2sum
   (->> sample-entry-s
        (two-sum-s 2020)
        (mapv (partial complement-product-2 2020))
        first)
+  #_=> 514579
+  ;; (2020 - num1) = 2sum result that yields num2 and num3
+  (->> sample-entry-s
+       (map #(two-sum-s (- 2020 %) sample-entry-s))
+       (set)
+       (reduce clojure.set/union)
+       (reduce *))
+  #_=> 241861950
+  ;; if remove the num1 from the list after select num1
+  (->> sample-entry-s
+       (map #(two-sum-s (- 2020 %) (remove #{%} sample-entry-s)))
+       (set)
+       (reduce clojure.set/union)
+       (reduce *))
+  #_=> 241861950
+
+
+  ;; 3 sum problem solution 2:
+  (let [permutation-s (for [x sample-entry-s
+                            y sample-entry-s]
+                        (+ x y))
+        compl-s       (entry-complement-s 2020 permutation-s)]
+    (compl-sum-s 2020 sample-entry-s compl-s))
+  #_=> #{979 366 675}
+
+  ;; lei practice remove
+  (remove #{1} [1 4 9])
+  #_=> (4 9)
+  (two-sum-s 10 [4 1 5 14 6])
+  #_=> #{4 6 5}
+  (two-sum-s 10 (remove #{5} [4 1 5 14 6]))
+  #_=> #{4 6}
+
+  ;; apply 2 sum to 3 sum
+  (map #(two-sum-s (- 2020 %) sample-entry-s)
+       sample-entry-s)
+  #_=> '(#{} #{366 675} #{979 675} #{} #{979 366} #{})
+  ;; question, how to use partial instead of the above function
+
+  (map #(two-sum-s (- 2020 %) (remove #{%} sample-entry-s)) sample-entry-s)
+  #_=> (#{} #{366 675} #{979 675} #{} #{979 366} #{})
+  (do (def test-list '(#{} #{366 675} #{979 675} #{} #{979 366} #{}))
+      test-list)
+  #_=> (#{} #{366 675} #{979 675} #{} #{979 366} #{})
+
+  (set test-list)
+  #_=> #{#{979 675} #{} #{979 366} #{366 675}}
+  (reduce clojure.set/union (set test-list))
+  #_=> #{979 366 675}
+  (do (def final-set (reduce clojure.set/union (set test-list)))
+      final-set)
+  #_=> #{979 366 675}
+  (reduce * final-set)
+  #_=> 241861950
+
+
 
   (two-sum-s 2020 sample-entry-s)
   #_=> #{299 1721}
@@ -110,4 +163,13 @@
        #_(clojure.set/intersection (set sample-entry-s))
        (mapv (partial complement-product 2020))
        first)
+
+  (let [target  20
+        entry-s [2 3 4]]
+    (->> (for [x entry-s
+               y entry-s]
+           (+ x y))
+         (into #{})))
+  #_=> #{7 4 6 5 8}
+
   )
