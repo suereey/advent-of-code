@@ -115,6 +115,22 @@
   #_=> "abcde"
   (policy ["1-3" "a:" "abcde"])
   #_=> [1 3]
+
+  ;; practice filter and char-freq function
+  (filter #(= \a %) "abca")
+  #_=> (\a \a)
+  (count (filter #(= \a %) "abca"))
+  #_=> 2
+  (char-freq "a" "abca")
+  #_=> 0
+  (char-freq \a "abca")
+  #_=> 2
+  ;; check the frequency of the target char in a password
+  (actual-freq ["1-3" "a:" "abcde"])
+  #_=> 1
+  (compare-freq [1 3] 2)
+  #_=> true
+
   (char-index \a [1 3] "abcde")
   #_=> true
   (char-index \c [2 9] "ccccccccc")
@@ -143,24 +159,6 @@
   (mapv #(clojure.string/split % #" ") input-s)
   #_=> [["1-3" "a:" "abcde"] ["1-3" "b:" "cdefg"] ["2-9" "c:" "ccccccccc"]]
 
-  ;; practice filter and char-freq function
-  (filter #(= \a %) "abca")
-  #_=> (\a \a)
-  (count (filter #(= \a %) "abca"))
-  #_=> 2
-  (char-freq "a" "abca")
-  #_=> 0
-  (char-freq \a "abca")
-  #_=> 2
-
-  ;; check the frequency of the target char in a password
-  (actual-freq ["1-3" "a:" "abcde"])
-  #_=> 1
-  (policy-freq ["1-3" "a:" "abcde"])
-  #_=> [1 3]
-  (compare-freq [1 3] 2)
-  #_=> true
-
   (count (filter identity [true false true]))
   #_=> 2
 
@@ -170,4 +168,5 @@
   #_=> [1 2]
 
   (mapv #(Integer/parseInt %) ["1" "2"])
-  #_=> [1 2])
+  #_=> [1 2]
+  )

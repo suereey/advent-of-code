@@ -73,10 +73,18 @@
      (tree-num 1 2 input-s))
 
   (tree-num 1 1 input-s)
+  #_=> 2
+
   (tree-num 3 1 input-s)
+  #_=> 7
   (tree-num 5 1 input-s)
+  #_=> 3
   (tree-num 7 1 input-s)
+  #_=> 3
+  ;; the above 7 1 is not correct :(
   (tree-num 1 2 input-s)
+  #_=> 2
+
   (checked-location-s 1 2 (count input-s))
   (count input-s)
 
