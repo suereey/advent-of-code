@@ -16,10 +16,6 @@
   [password-policy]
   (password-policy 2))
 
-(defn char-freq
-  [char password]
-  (count (filter #(= char %) password)))
-
 (defn policy
   [password-policy]
   (let [policy-freq-string (password-policy 0)
@@ -27,7 +23,11 @@
         policy-freq-v      (mapv #(Integer/parseInt %) policy-freq-split)]
     policy-freq-v))
 
-;; for part 1
+;; for part 1: about frequency
+(defn char-freq
+  [char password]
+  (count (filter #(= char %) password)))
+
 (defn actual-freq
   [password-policy]
   (let [char        (char password-policy)
@@ -39,7 +39,7 @@
   [policy-freq actual-freq]
   (and (>= actual-freq (policy-freq 0)) (<= actual-freq (policy-freq 1))))
 
-;; for part 2
+;; for part 2 about index
 (defn logic-xor
   [boolean1 boolean2]
   (if (not (and boolean1 boolean2))
