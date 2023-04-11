@@ -1,26 +1,12 @@
-(ns advent-of-code.2020.day2)
+(ns advent-of-code.2020.day2-vect-solution)
 
-(defn file->policy+password
+(defn file->seq
   [filename]
   (->> (-> filename
            (slurp)
            (clojure.string/split #"\n"))
        (mapv #(clojure.string/split % #" "))))
 
-
-
-(defn file->policy-password
-  [filename]
-  (->> (-> filename
-           (slurp)
-           (clojure.string/split #"\n"))
-       (mapv #(clojure.string/split % #" "))
-       (mapv (fn [[policy-bounds letter pwd]]
-               {:policy-bounds policy-bounds
-                :letter        letter
-                :pwd           pwd}))))
-
-;; for solution 2
 (defn char
   [password-policy]
   (first (password-policy 1)))
@@ -31,7 +17,7 @@
 
 (defn policy
   [password-policy]
-  (let [policy-freq-string (get password-policy 0)
+  (let [policy-freq-string (password-policy 0)
         policy-freq-split  (clojure.string/split policy-freq-string #"-")
         policy-freq-v      (mapv #(Integer/parseInt %) policy-freq-split)]
     policy-freq-v))
@@ -39,9 +25,7 @@
 ;; for part 1: about frequency
 (defn char-freq
   [char password]
-  (->> password
-       (filter #(= char %))
-       count))
+  (count (filter #(= char %) password)))
 
 (defn actual-freq
   [password-policy]
@@ -52,44 +36,28 @@
 
 (defn compare-freq
   [policy-freq actual-freq]
-  (and (>= actual-freq (policy-freq 0))
-       (<= actual-freq (policy-freq 1))))
+  (and (>= actual-freq (policy-freq 0)) (<= actual-freq (policy-freq 1))))
 
 ;; for part 2 about index
 (defn logic-xor
   [boolean1 boolean2]
-  (or (and boolean1 (not boolean2))
-      (and boolean2 (not boolean1)))
-
   (if (not (and boolean1 boolean2))
     (or boolean1 boolean2)
     false))
 
 (defn char-index
   [char policy password]
-  (let [_        (println char)
-        _        (println policy)
-        _        (println password)
-
-        char1    (nth password (- (policy 0) 1))
+  (let [char1    (nth password (- (policy 0) 1))
         char2    (nth password (- (policy 1) 1))
         boolean1 (= char1 char)
         boolean2 (= char2 char)]
     (logic-xor boolean1 boolean2)))
 
-
-
-
 ;; Rich Comment Block
 (comment
-
-  (do (def input-s (file->policy-password "resources/2020/day2/input-sample.txt"))
-      input-s)
+  (do (def input-s (file->seq "resources/2020/day2/input-sample.txt")) input-s)
   ;; update the file->seq function. not return this ["1-3 a: abcde" "1-3 b: cdefg" "2-9 c: ccccccccc"]
-  #_=> [{:policy-bounds "1-3", :letter "a:", :pwd "abcde"}
-        {:policy-bounds "1-3", :letter "b:", :pwd "cdefg"}
-        {:policy-bounds "2-9", :letter "c:", :pwd "ccccccccc"}]
-
+  #_=> [["1-3" "a:" "abcde"] ["1-3" "b:" "cdefg"] ["2-9" "c:" "ccccccccc"]]
 
   ;; solution here-part 1
   (let [actual-freq  (mapv actual-freq input-s)
@@ -107,15 +75,12 @@
                          char password policy)]
     (count (filter identity char-index)))
 
-  ;; question 1: why this one is not working
-  (char-index \a "abcde" [1 3])
+
   (mapv char-index
         [\a \b \c]
         [[1 3] [1 3] [2 9]]
         ["abcde" "cdefg" "ccccccccc"])
-  (mapv char-index [\a \b \c]
-        ["abcde" "cdefg" "ccccccccc"]
-        [[1 3] [1 3] [2 9]])
+  #_=> [true false false]
 
   (mapv (fn [char password policy]
           (char-index char policy password))
@@ -124,17 +89,7 @@
         [[1 3] [1 3] [2 9]])
   #_=> [true false false]
 
-  ;; question 2 xor logic in clojure?
-  ;; write the xor logic based on problem requirement
-  ;; a b
-  ;; true false
-  ;; false true
-  ;; and -> false
-  ;; or -> true
-  (mapv either-or [[true true]
-                   [true false]
-                   [false true]
-                   [false false]])
+  ;; logic of xor
   (logic-xor true true)
   #_=> false
   (logic-xor true false)

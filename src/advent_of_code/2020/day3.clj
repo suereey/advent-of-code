@@ -10,20 +10,34 @@
 ;; output is a list that indicate all locations that being checked in -> [[0 0] [1 3] [] ...]
 (defn checked-location-s
   [right down total-row]
-  (mapv (fn [row] [(* row down) (* row right)]) (range (/ total-row down))))
+  (mapv (fn [row]
+          [(* row down) (* row right)])
+        (range (/ total-row down))))
+
+(defn loc-val
+  [grid [x y]]
+  )
+
+(defn tree?
+  [c]
+  (= c \#))
+
 
 ;; input is location [1 3] output is if it is a tree -> true/false
 ;; make sure it's tolerant to index out of range
-(defn is-tree?
+(defn tree?
   [checked-location input-s]
   (let [row      (checked-location 0)
         col      (rem (checked-location 1) (count (input-s row)))
         location (nth (input-s row) col)]
-    (or (= location \X) (= location \#))))
+    (or (= location \X)
+        (= location \#))))
+
 
 ;; Rich Comment Block
 (comment
-  (do (def input-s (file->seq "resources/2020/day3/input-sample.txt")) input-s)
+  (do (def input-s (file->seq "resources/2020/day3/input-sample.txt"))
+      input-s)
   #_=>
   ["..##.........##.........##.........##.........##.........##.......  --->"
    "#..O#...#..#...#...#..#...#...#..#...#...#..#...#...#..#...#...#.."
@@ -33,19 +47,19 @@
   ;;solution for part 1 sample input
   (let [total-row (count input-s)]
     (->>
-      (mapv #(is-tree? % input-s) (checked-location-s 3 1 total-row))
+      (mapv #(tree? % input-s) (checked-location-s 3 1 total-row))
       (filter true?)
       (count)))
   #_=> 7
 
   ;; solution for part 1 real input
-  (do (def input-s (file->seq "resources/2020/day3/input.txt")) input-s)
+  (do (def input-s (file->seq "resources/2020/day3/input.txt"))
+      input-s)
 
   (let [total-row (count input-s)]
-    (->>
-      (mapv #(is-tree? % input-s) (checked-location-s 3 1 total-row))
-      (filter true?)
-      (count)))
+    (->> (mapv #(is-tree? % input-s) (checked-location-s 3 1 total-row))
+         (filter true?)
+         (count)))
   #_=> 167
 
   ;; solution for part 2 sample input
