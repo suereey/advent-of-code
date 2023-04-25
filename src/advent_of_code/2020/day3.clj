@@ -9,32 +9,32 @@
 ;; input-s ["...." "...."]
 ;; output-s locations can be checked -> [[0 0] [1 3] [] ...]
 (defn checked-location-s
-  [right down]
+  [[right down]]
   (map (fn [row]
          [(* row down) (* row right)])
        (iterate inc 0)))
 
 (defn filter-location-s
-  [right down total-row]
-  (take (int (/ total-row down)) (checked-location-s right down)))
+  [[right down] total-row]
+  (take (int (/ total-row down)) (checked-location-s [right down])))
 
 (defn tree?
   [char]
-  (or (= char \#)
-      (= char \X)))
+  (or (= char \X)
+      (= char \#)))
 
 (defn location-char
-  [input-s location]
+  [grid location]
   (let [row              (location 0)
         col              (location 1)
-        repeated-pattern (cycle (input-s row))
+        repeated-pattern (cycle (grid row))
         location-char    (nth repeated-pattern col)]
     location-char))
 
 (defn num-tree-solution
-  [input-s right down]
-  (let [location-s      (filter-location-s right down (count input-s))
-        location-char-s (mapv #(location-char input-s %) location-s)]
+  [grid [right down]]
+  (let [location-s      (filter-location-s [right down] (count grid))
+        location-char-s (mapv #(location-char grid %) location-s)]
     (->> location-char-s
          (mapv tree?)
          (filter identity)
@@ -51,7 +51,7 @@
    "..."
    "..."]
 
-  (take 5 (checked-location-s 3 1))
+  (take 5 (checked-location-s [3 1]))
   #_=> ([0 0] [1 3] [2 6] [3 9] [4 12])
   ;; question why map works but not map v?
   ;(defn checked-location-s [right down]
@@ -61,7 +61,7 @@
   ;(take 5 (checked-location-s 3 1))
 
 
-  (filter-location-s 3 1 5)
+  (filter-location-s [3 1] 5)
   #_=> ([0 0] [1 3] [2 6] [3 9] [4 12])
 
   (location-char input-s [0 0])
@@ -150,5 +150,5 @@
   #_=> 67
   (num-tree-solution input-part2 1 2)
   #_=> 22
-  
+
 )
